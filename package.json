@@ -1,0 +1,12 @@
+{
+  "name": "A_falling-ball",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ammo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

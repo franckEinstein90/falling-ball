@@ -1,0 +1,100 @@
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>JS 3D Physics</title>
+        <style>
+            body { margin: 0; }
+        </style>
+    </head>
+    <body>
+        <script src="src/three.js"></script>
+        <script src="src/ammo.js"></script>
+        <script src="src/graphics.js"></script>
+        <script src="src/createBall.js"></script>
+        <script src="src/physicsEnv.js"></script>
+        <script src="src/platform.js"></script>
+        <script>
+
+            //variable declaration section
+
+            const {scene, camera, renderer, clock} = setupGraphics() ;  
+            const rigidBodies = []
+
+            
+            //Ammojs Initialization
+            Ammo().then(start)
+
+            function start (){
+
+                tmpTrans = new Ammo.btTransform();
+                const physicsWorld = physicsEnv();
+                setupGraphics();
+                const stopBlock = platform( physicsWorld );
+                const ball = createBall( {
+                    physicsWorld, 
+                    mass:3
+                });
+                scene.add( stopBlock.mesh ) ; 
+                scene.add( ball.mesh ) ; 
+                renderFrame( {
+                    scene, 
+                    physicsWorld, 
+                    camera, 
+                    clock
+                }) ;
+            }
+
+
+
+        
+            function renderFrame( options ){
+
+                const physicsWorld = options.physicsWorld ; 
+                const scene = options.scene ; 
+                const camera = options.camera ; 
+                const clock = options.clock ; 
+
+                let deltaTime = clock.getDelta();
+
+                updatePhysics( deltaTime, physicsWorld );
+
+                renderer.render( scene, camera );
+
+                requestAnimationFrame( _ => renderFrame( options ) );
+
+            }
+
+
+            
+
+           
+
+
+
+            function updatePhysics( deltaTime, physicsWorld ){
+                // Step world
+                physicsWorld.stepSimulation( deltaTime, 10 );
+
+                // Update rigid bodies
+                for ( let i = 0; i < rigidBodies.length; i++ ) {
+                    let objThree = rigidBodies[ i ];
+                    let objAmmo = objThree.userData.physicsBody;
+                    let ms = objAmmo.getMotionState();
+                    if ( ms ) {
+
+                        ms.getWorldTransform( tmpTrans );
+                        let p = tmpTrans.getOrigin();
+                        let q = tmpTrans.getRotation();
+                        objThree.position.set( p.x(), p.y(), p.z() );
+                        objThree.quaternion.set( q.x(), q.y(), q.z(), q.w() );
+
+                    }
+                }
+
+            }
+
+
+        </script>
+    </body>
+</html>
