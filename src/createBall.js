@@ -23,13 +23,11 @@ const _ball = ( options )=>{
 } ; 
 
 
-function createBall( options ){
+const createBall = ( options )=>{
                
-    const physicsWorld = options.physicsWorld ; 
-    const rigidBodies = options.rigidBodies ; 
-    const mass = options.mass || 1 ; 
-
-    const pos = {
+    const physics   = options.physics ; 
+    const mass      = options.mass || 1 ; 
+    const pos       = options.position || {
         x : 0, 
         y : 30, 
         z : 0
@@ -50,8 +48,6 @@ function createBall( options ){
     transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
     transform.setRotation( new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w ) );
 
-
-
     let motionState = new Ammo.btDefaultMotionState( transform );
     let colShape = new Ammo.btSphereShape( ball.radius );
     colShape.setMargin( 0.05 );
@@ -61,9 +57,9 @@ function createBall( options ){
 
     let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
     let body = new Ammo.btRigidBody( rbInfo );
-    physicsWorld.addRigidBody( body );
+    physics.world.addRigidBody( body );
     ball.mesh.userData.physicsBody = body;
-    rigidBodies.push( ball.mesh );
+    physics.rigidBodies.push( ball.mesh );
     return {
         mesh : ball.mesh 
     }

@@ -1,18 +1,19 @@
 const THREE = require('./three');
 
-const platform = ( physicsWorld )=>{
+const platform = ( { Ammo, physics }, options )=>{
                 
-    let pos = {x: 0, y: 0, z: 0};
+    const pos = (options && options.position) || {x: 0, y: 0, z: 0} ;
     let scale = {x: 50, y: 2, z: 50};
     let quat = {x: 0, y: 0, z: 0, w: 1};
     let mass = 0;
 
     //threeJS Section
-    let blockPlane = new THREE.Mesh(new THREE.BoxBufferGeometry(), new THREE.MeshPhongMaterial({color: 0xa0afa4}));
+    let blockPlane = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(), 
+        new THREE.MeshPhongMaterial({color: 0xa0afa4}));
 
     blockPlane.position.set(pos.x, pos.y, pos.z);
     blockPlane.scale.set(scale.x, scale.y, scale.z);
-
     blockPlane.castShadow = true;
     blockPlane.receiveShadow = true;
 
@@ -30,12 +31,13 @@ const platform = ( physicsWorld )=>{
     let localInertia = new Ammo.btVector3( 0, 0, 0 );
     colShape.calculateLocalInertia( mass, localInertia );
 
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
-    let body = new Ammo.btRigidBody( rbInfo );
-    physicsWorld.addRigidBody( body );
+    let rbInfo  = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
+    let body    = new Ammo.btRigidBody( rbInfo );
+    physics.world.addRigidBody( body );
+
     return {
         mesh : blockPlane
-    }
+    } ; 
 }
 
 module.exports = {

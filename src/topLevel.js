@@ -1,3 +1,4 @@
+const { Vector3 } = require('./math/position'); 
 const setupGraphics = require('./graphics').setupGraphics ;
 const physicsEnv = require('./physicsEnv').physicsEnv ;
 const platform = require('./platform').platform ; 
@@ -7,86 +8,71 @@ const Ammo = require('./ammo');
 
 const start = ( {
     Ammo,
-    scene,
-    camera, 
-    renderer,  
-    rigidBodies
+    ThreeStack
  }) => {
 
-
-    const gravity   = new Ammo.btVector3(0, -150, 0) ;
-    const clock     = new THREE.Clock();
-    const physics   = physicsEnv( {Ammo,gravity} );
-    const stopBlock = platform( physics.world );
-
+    const gravity = {x:0, y:-140, z:0} ; 
+    const physics       = physicsEnv( { Ammo, gravity} );
+    const clock         = new THREE.Clock();
+    const stopBlock     = platform( {Ammo, physics}, {position:{ x:-10, y:0, z:0 }});
     const ball = createBall( {
-        rigidBodies, 
-        physicsWorld : physics.world, 
+        physics,
         mass:3
     });
-    
-    scene.add( stopBlock.mesh ) ; 
-    scene.add( ball.mesh ) ; 
-    renderFrame( {
-        scene, 
+
+    ThreeStack.scene.add( stopBlock.mesh ) ; 
+    ThreeStack.scene.add( ball.mesh ) ; 
+
+    return renderFrame( {
+        ThreeStack, 
         physics, 
-        camera,
-        renderer,  
-        clock,
-        rigidBodies
+        clock
     }) ;
 } ; 
         
 const renderFrame = ( options )=>{
 
+    const ThreeStack = options.ThreeStack ; 
     const physics = options.physics ; 
-    const scene = options.scene ;
-    const renderer = options.renderer ;  
-    const camera = options.camera ; 
     const clock = options.clock ; 
-    const rigidBodies = options.rigidBodies ; 
-    let deltaTime = clock.getDelta();
-    updatePhysics( deltaTime, physics.world, rigidBodies, physics.tmpTrans );
-    renderer.render( scene, camera );
+    const deltaTime = clock.getDelta();
+
+    updatePhysics( {deltaTime, physics}) ;
+    ThreeStack.renderer.render( ThreeStack.scene, ThreeStack.camera );
     requestAnimationFrame( _ => renderFrame( options ) );
 
 }
 
+const updatePhysics = ( {deltaTime, physics} )=>{
 
-const updatePhysics = ( deltaTime, physicsWorld, rigidBodies, tmpTrans )=>{
-    // Step worlconst THREE = require('./three');d
+    physics.world.stepSimulation( deltaTime, 10 );
 
-    physicsWorld.stepSimulation( deltaTime, 10 );
-    // Update rigid bodies
-    for ( let i = 0; i < rigidBodies.length; i++ ) {
-        let objThree = rigidBodies[ i ];
-        let objAmmo = objThree.userData.physicsBody;
-        let ms = objAmmo.getMotionState();
+    physics.rigidBodies.forEach( rigidBody => {
+        const objAmmo = rigidBody.userData.physicsBody;
+        const ms = objAmmo.getMotionState();
         if ( ms ) {
 
-            ms.getWorldTransform( tmpTrans );
-            let p = tmpTrans.getOrigin();
-            let q = tmpTrans.getRotation();
-            objThree.position.set( p.x(), p.y(), p.z() );
-            objThree.quaternion.set( q.x(), q.y(), q.z(), q.w() );
+            ms.getWorldTransform( physics.tmpTrans );
+            let p = physics.tmpTrans.getOrigin();
+            let q = physics.tmpTrans.getRotation();
+            rigidBody.position.set( p.x(), p.y(), p.z() );
+            rigidBody.quaternion.set( q.x(), q.y(), q.z(), q.w() );
 
         }
-    }
-}
+       
+    });
+} ; 
 
 
 $( document ).ready(function() {
 
-    const {scene, camera, renderer} = setupGraphics() ; 
-    const rigidBodies = []
-            //Ammojs Initialization
+    const ThreeStack = setupGraphics() ; 
+    //Ammojs Initialization
     return Ammo()
         .then( Ammo =>start({
             Ammo,
-            scene, 
-            camera, 
-            renderer,  
-            rigidBodies})) ; 
+            ThreeStack
+           })) ; 
 
  
 });
