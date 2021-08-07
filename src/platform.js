@@ -16,7 +16,6 @@ const platform = ( physicsWorld )=>{
     blockPlane.castShadow = true;
     blockPlane.receiveShadow = true;
 
-//    scene.add( blockPlane );
 
     //Ammojs Section
     let transform = new Ammo.btTransform();

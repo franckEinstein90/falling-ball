@@ -1,20 +1,23 @@
 
-const physicsEnv = ()=>{
+const physicsEnv = ( { Ammo, gravity} )=>{
 
     const collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration() ;
     const dispatcher              = new Ammo.btCollisionDispatcher( collisionConfiguration ) ; 
     const overlappingPairCache    = new Ammo.btDbvtBroadphase() ; 
     const solver                  = new Ammo.btSequentialImpulseConstraintSolver();
+    const tmpTrans                = new Ammo.btTransform(); 
 
-    const physicsWorld = new Ammo.btDiscreteDynamicsWorld(
+    const world = new Ammo.btDiscreteDynamicsWorld(
         dispatcher, 
         overlappingPairCache, 
         solver, 
         collisionConfiguration ) ;
+    world.setGravity( gravity ) ;
 
-    physicsWorld.setGravity(new Ammo.btVector3(0, -150, 0)) ;
-    return physicsWorld ; 
-
+    return {
+        world, 
+        tmpTrans
+    } ; 
 } ;
 
 module.exports = {

@@ -3,7 +3,6 @@ const THREE = require('./three');
 
 const setupGraphics = ()=>{
 
-    const clock = new THREE.Clock();
     const scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xbfd1e5 );
 
@@ -56,7 +55,6 @@ const setupGraphics = ()=>{
         scene, 
         camera, 
         renderer, 
-        clock
     }
 
 }

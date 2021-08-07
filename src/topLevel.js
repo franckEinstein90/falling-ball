@@ -2,29 +2,34 @@ const setupGraphics = require('./graphics').setupGraphics ;
 const physicsEnv = require('./physicsEnv').physicsEnv ;
 const platform = require('./platform').platform ; 
 const createBall = require('./createBall').createBall ; 
+const THREE = require('./three');
 const Ammo = require('./ammo'); 
 
 const start = ( {
+    Ammo,
     scene,
     camera, 
-    clock,
     renderer,  
     rigidBodies
  }) => {
 
-    const physicsWorld = physicsEnv();
-    console.log(physicsWorld ) ; 
-    const stopBlock = platform( physicsWorld );
+
+    const gravity   = new Ammo.btVector3(0, -150, 0) ;
+    const clock     = new THREE.Clock();
+    const physics   = physicsEnv( {Ammo,gravity} );
+    const stopBlock = platform( physics.world );
+
     const ball = createBall( {
         rigidBodies, 
-        physicsWorld, 
+        physicsWorld : physics.world, 
         mass:3
     });
+    
     scene.add( stopBlock.mesh ) ; 
     scene.add( ball.mesh ) ; 
     renderFrame( {
         scene, 
-        physicsWorld, 
+        physics, 
         camera,
         renderer,  
         clock,
@@ -34,24 +39,21 @@ const start = ( {
         
 const renderFrame = ( options )=>{
 
-    const physicsWorld = options.physicsWorld ; 
+    const physics = options.physics ; 
     const scene = options.scene ;
     const renderer = options.renderer ;  
     const camera = options.camera ; 
     const clock = options.clock ; 
     const rigidBodies = options.rigidBodies ; 
     let deltaTime = clock.getDelta();
-
-    updatePhysics( deltaTime, physicsWorld, rigidBodies );
-
+    updatePhysics( deltaTime, physics.world, rigidBodies, physics.tmpTrans );
     renderer.render( scene, camera );
-
     requestAnimationFrame( _ => renderFrame( options ) );
 
 }
 
 
-const updatePhysics = ( deltaTime, physicsWorld, rigidBodies )=>{
+const updatePhysics = ( deltaTime, physicsWorld, rigidBodies, tmpTrans )=>{
     // Step worlconst THREE = require('./three');d
 
     physicsWorld.stepSimulation( deltaTime, 10 );
@@ -62,7 +64,7 @@ const updatePhysics = ( deltaTime, physicsWorld, rigidBodies )=>{
         let ms = objAmmo.getMotionState();
         if ( ms ) {
 
-            ms.getWorldTransform( );
+            ms.getWorldTransform( tmpTrans );
             let p = tmpTrans.getOrigin();
             let q = tmpTrans.getRotation();
             objThree.position.set( p.x(), p.y(), p.z() );
@@ -75,14 +77,14 @@ const updatePhysics = ( deltaTime, physicsWorld, rigidBodies )=>{
 
 $( document ).ready(function() {
 
-    const {scene, camera, renderer, clock} = setupGraphics() ; 
+    const {scene, camera, renderer} = setupGraphics() ; 
     const rigidBodies = []
             //Ammojs Initialization
-    Ammo()
-        .then( ()=>start({
+    return Ammo()
+        .then( Ammo =>start({
+            Ammo,
             scene, 
             camera, 
-            clock,
             renderer,  
             rigidBodies})) ; 
 
