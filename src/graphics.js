@@ -1,3 +1,5 @@
+const THREE = require('./three');
+
 
 const setupGraphics = ()=>{
 
@@ -57,4 +59,8 @@ const setupGraphics = ()=>{
         clock
     }
 
+}
+
+module.exports = {
+    setupGraphics
 }

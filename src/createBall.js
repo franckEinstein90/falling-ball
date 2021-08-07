@@ -1,4 +1,4 @@
-
+const THREE = require('./three');
 
 const _ball = ( options )=>{
     const radius = options.radius || 2 ;
@@ -26,6 +26,7 @@ const _ball = ( options )=>{
 function createBall( options ){
                
     const physicsWorld = options.physicsWorld ; 
+    const rigidBodies = options.rigidBodies ; 
     const mass = options.mass || 1 ; 
 
     const pos = {
@@ -66,6 +67,8 @@ function createBall( options ){
     return {
         mesh : ball.mesh 
     }
+}
 
-
+module.exports = {
+    createBall 
 }

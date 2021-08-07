@@ -1,3 +1,4 @@
+
 const physicsEnv = ()=>{
 
     const collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration() ;
@@ -9,9 +10,13 @@ const physicsEnv = ()=>{
         dispatcher, 
         overlappingPairCache, 
         solver, 
-        collisionConfiguration);
+        collisionConfiguration ) ;
 
-    physicsWorld.setGravity(new Ammo.btVector3(0, -150, 0));
+    physicsWorld.setGravity(new Ammo.btVector3(0, -150, 0)) ;
     return physicsWorld ; 
 
 } ;
+
+module.exports = {
+    physicsEnv 
+} ; 

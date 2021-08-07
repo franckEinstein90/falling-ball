@@ -1,3 +1,5 @@
+const THREE = require('./three');
+
 const platform = ( physicsWorld )=>{
                 
     let pos = {x: 0, y: 0, z: 0};
@@ -35,5 +37,8 @@ const platform = ( physicsWorld )=>{
     return {
         mesh : blockPlane
     }
+}
 
+module.exports = {
+    platform
 }
