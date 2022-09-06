@@ -1,9 +1,10 @@
 {
-  "name": "A_falling-ball",
+  "name": "falling-ball",
   "version": "1.0.0",
   "description": "",
   "main": "ammo.js",
   "scripts": {
+    "build": "npx tsc && cp ./src/ammo.js ./lib/src/ammo.js && browserify ./lib/src/toplevel.js -o ./docs/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,5 +14,8 @@
     "browserify": "^17.0.0",
     "chai": "^4.3.4",
     "watchify": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.15"
   }
 }

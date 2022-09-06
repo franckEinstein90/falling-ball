@@ -1,18 +1,23 @@
+
 const THREE = require('./three');
 
-const _ball = ( options )=>{
+const _ball = ( options)=>{
     const radius = options.radius || 2 ;
     const pos = options.position || {
         x : 0, 
-        y : 20, 
+        y : 30, 
         z : 0
     } ; 
 
     const ball = new THREE.Mesh(
         new THREE.SphereBufferGeometry(radius), 
-        new THREE.MeshPhongMaterial({color: 0x00ff05})) ;
+        new THREE.MeshPhongMaterial({color: 0xf1ffa5})) ;
 
-    ball.position.set(pos.x, pos.y, pos.z) ;
+    ball.position.set(
+        pos.x, 
+        pos.y, 
+        pos.z) ;
+    
     ball.castShadow = true ;
     ball.receiveShadow = true ;
 
@@ -29,7 +34,7 @@ const createBall = ( options )=>{
     const mass      = options.mass || 1 ; 
     const pos       = options.position || {
         x : 0, 
-        y : 30, 
+        y : 10, 
         z : 0
     } ; 
 

@@ -1,34 +1,38 @@
 
-const ErrorCodes = (()=>{
+export const ErrorCodes = (()=>{
 
     return {
-
         invalidArray : 'Invalid array' 
     } ; 
-
 })() ; 
 
-class Point {
+export class Point {
 
-    constructor( posArray, options ){
+    private dimension: number ;
+    private values: number[] ;
+
+    constructor(posArray:number[], options: {
+        arity?: number
+    }){
 
         if(!posArray) throw ErrorCodes.invalidArray ; 
         if( !(Array.isArray(posArray)) ) throw ErrorCodes.invalidArray ;
         if( posArray.length === 0 ) throw ErrorCodes.invalidArray ; 
         if(posArray.filter( n => typeof n !== 'number').length > 0) throw ErrorCodes.invalidArray ; 
-        this.dimension = (options && options.arity)
-            ? options.arity
-            : posArray.length ; 
+
+        this.dimension = ('arity' in options && options['arity'] !== undefined) 
+            ? options['arity'] 
+            : posArray.length ;
 
         this.values = [...posArray] ; 
         this.values.length = this.dimension ; 
     }
 
-    toObject( str ){
+    toObject(str: String): Record<string, number> {
         const keys = str.split('');
         const returnObject = {}; 
         this.values.forEach( (val, idx) => {
-            returnObject[keys[idx]] = val; 
+            Object.defineProperty(returnObject, keys[idx], val); 
         });
         return returnObject ; 
     }
@@ -36,9 +40,11 @@ class Point {
 
 class Vector3 extends Point{
 
-    constructor( posArray, keyString ){
-        super( posArray, {arity:3} ) ; 
-        this.keyString = keyString || 'xyz'  ; 
+    private keyString: string ;
+
+    constructor(posArray: number[], keyString: string = 'xyz'){
+        super(posArray, {arity:3}); 
+        this.keyString = keyString; 
     }
     
     toObject( ){
@@ -46,11 +52,4 @@ class Vector3 extends Point{
     }
 
 }
-
-module.exports = {
-    ErrorCodes, 
-    Point,
-    Vector3 
-}
-
 
